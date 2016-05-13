@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * TODO: Find a way to circumvent the popup blocker.
+ */
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function wilke_popup_preprocess_html(&$vars) {
+  if (drupal_is_front_page()) {
+    drupal_add_js(drupal_get_path('module', 'wilke_popup') . '/wilke_popup.js');
+  }
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function wilke_popup_page_build(&$page) {
+  // Doesn't work. The popup blocker will also detect this.
+  /*$page['page_bottom']['wilke_popup']['#markup'] = l('', 'http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', array(
+    'attributes' => array(
+      'onload' => "window.open('http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da','wilkeSurvey6453746498','width=1000,height=700,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0');return false;",
+      'style' => 'display:none;',
+      'id' => 'wilke-popup',
+    ),
+  ));*/
+}
