@@ -2,3 +2,4 @@ name = Wilke popup
 description = Implements the Wilke survey popup on the frontpage.
 core = 7.x
 package = Ding!
+dependencies[] = ding_popup

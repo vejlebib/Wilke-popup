@@ -1,7 +1,16 @@
 (function($) {
 
-  $(document).ready(function() {
-    window.open('http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da','wilkeSurvey6453746498','width=1000,height=700,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0');
-  });
+  Drupal.behaviors.wilkePopup = {
+      attach: function(context, settings) {
+        // Only show the popup if it hasn't been shown in this user agent.
+        if ($.cookie('wilke_popup_shown') === undefined) {
+          var wilke_popup = $("#wilke-popup", context);
+          if (wilke_popup.length > 0) {
+            $("#wilke-popup")[0].click();
+            $.cookie('wilke_popup_shown', 1);
+          }
+        }
+    }
+  };
 
 }(jQuery));

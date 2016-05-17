@@ -5,6 +5,44 @@
  */
 
 /**
+ * Implements hook_menu().
+ */
+function wilke_popup_menu() {
+  $items = array();
+
+  $items['wilke-popup'] = array(
+    'page callback' => 'wilke_popup_callback',
+    'delivery callback' => 'ajax_deliver',
+    'access callback' => TRUE,
+  );
+
+  return $items;
+}
+
+function wilke_popup_callback() {
+  $commands = array();
+
+  $html = '<p>Er du tilfreds med vores udvalg, arrangementer, service, åbningstider?</p>';
+  $html .= '<p>I løbet af de næste fire uger gennemfører Vejle Bibliotekerne en brugerundersøgelse, som skal være med til at gøre dit bibliotek endnu bedre, og vi har brug for din hjælp.</p>';
+  $html .= l('Nej tak', '<front>', array(
+    'attributes' => array(
+      'class' => array('action-button', 'bookmark-button'),
+      'style' => 'margin-right:10px;',
+    ),
+  ));
+  $html .= l('Tag mig til undersøgelse', 'http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', array(
+    'attributes' => array(
+      'class' => array('action-button', 'bookmark-button'),
+      'target' => '_blank',
+    ),
+  ));
+
+  $commands[] = ajax_command_ding_popup('ding_bookmark', 'Undskyld vi forstyrrer', $html);
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
  * Implements hook_preprocess_html().
  */
 function wilke_popup_preprocess_html(&$vars) {
@@ -17,12 +55,13 @@ function wilke_popup_preprocess_html(&$vars) {
  * Implements hook_page_build().
  */
 function wilke_popup_page_build(&$page) {
-  // Doesn't work. The popup blocker will also detect this.
-  /*$page['page_bottom']['wilke_popup']['#markup'] = l('', 'http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', array(
+  drupal_add_js(drupal_get_path('module', 'ding_facetbrowser') . '/js/jquery.cookie.min.js');
+  drupal_add_library('system', 'drupal.ajax');
+  $page['page_bottom']['wilke_popup']['#markup'] = l('', 'wilke-popup', array(
     'attributes' => array(
-      'onload' => "window.open('http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da','wilkeSurvey6453746498','width=1000,height=700,toolbar=0,menubar=0,location=0,status=0,scrollbars=1,resizable=1,left=0,top=0');return false;",
       'style' => 'display:none;',
       'id' => 'wilke-popup',
+      'class' => 'use-ajax',
     ),
-  ));*/
+  ));
 }
