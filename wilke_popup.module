@@ -1,7 +1,7 @@
 <?php
 
 /**
- * TODO: Find a way to circumvent the popup blocker.
+ * Module file for Wilke popup.
  */
 
 /**
@@ -9,6 +9,14 @@
  */
 function wilke_popup_menu() {
   $items = array();
+
+  $items['admin/config/ding/wilke-popup'] = array(
+    'title' => 'Wilke popup',
+    'description' => 'Change the Wilke popup text',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wilke_popup_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
 
   $items['wilke-popup'] = array(
     'page callback' => 'wilke_popup_callback',
@@ -19,49 +27,60 @@ function wilke_popup_menu() {
   return $items;
 }
 
+/**
+ * Ajax callback to render the popup.
+ */
 function wilke_popup_callback() {
   $commands = array();
 
-  $html = '<p>Er du tilfreds med vores udvalg, arrangementer, service, åbningstider?</p>';
-  $html .= '<p>I løbet af de næste fire uger gennemfører Vejle Bibliotekerne en brugerundersøgelse, som skal være med til at gøre dit bibliotek endnu bedre, og vi har brug for din hjælp.</p>';
-  $html .= l('Nej tak', '<front>', array(
+  // Use some basic XSS protection while still allowing tags.
+  $html = filter_xss_admin(variable_get('wilke_popup_text', WILKE_POPUP_DEFAULT_TEXT));
+  $html .= l(t('No thanks'), '<front>', array(
     'attributes' => array(
       'class' => array('action-button', 'bookmark-button'),
       'style' => 'margin-right:10px;',
     ),
   ));
-  $html .= l('Tag mig til undersøgelse', 'http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', array(
+  $html .= l(t('Yes please'), 'http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', array(
     'attributes' => array(
       'class' => array('action-button', 'bookmark-button'),
       'target' => '_blank',
     ),
   ));
 
-  $commands[] = ajax_command_ding_popup('ding_bookmark', 'Undskyld vi forstyrrer', $html);
+  $commands[] = ajax_command_ding_popup('ding_bookmark', t('Sorry to interrupt'), $html);
 
   return array('#type' => 'ajax', '#commands' => $commands);
 }
 
 /**
- * Implements hook_preprocess_html().
+ * Form builder callback for wilke admin settings form.
  */
-function wilke_popup_preprocess_html(&$vars) {
-  if (drupal_is_front_page()) {
-    drupal_add_js(drupal_get_path('module', 'wilke_popup') . '/wilke_popup.js');
-  }
+function wilke_popup_admin_settings($form, &$form_state) {
+  $form['wilke_popup_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Wilke popup text'),
+    '#description' => t('Enter the text to show in the Wilke popup (some tags allowed).'),
+    '#default_value' => variable_get('wilke_popup_text', ''),
+  );
+
+  return system_settings_form($form);
 }
 
 /**
  * Implements hook_page_build().
  */
 function wilke_popup_page_build(&$page) {
-  drupal_add_js(drupal_get_path('module', 'ding_facetbrowser') . '/js/jquery.cookie.min.js');
-  drupal_add_library('system', 'drupal.ajax');
-  $page['page_bottom']['wilke_popup']['#markup'] = l('', 'wilke-popup', array(
-    'attributes' => array(
-      'style' => 'display:none;',
-      'id' => 'wilke-popup',
-      'class' => 'use-ajax',
-    ),
-  ));
+  if (drupal_is_front_page()) {
+    drupal_add_library('system', 'drupal.ajax');
+    drupal_add_js(drupal_get_path('module', 'ding_facetbrowser') . '/js/jquery.cookie.min.js');
+    drupal_add_js(drupal_get_path('module', 'wilke_popup') . '/wilke_popup.js');
+    $page['page_bottom']['wilke_popup']['#markup'] = l('', 'wilke-popup', array(
+      'attributes' => array(
+        'style' => 'display:none;',
+        'id' => 'wilke-popup',
+        'class' => 'use-ajax',
+      ),
+    ));
+  }
 }
