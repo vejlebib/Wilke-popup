@@ -34,7 +34,7 @@ function wilke_popup_callback() {
   $commands = array();
 
   // Use some basic XSS protection while still allowing tags.
-  $html = filter_xss_admin(variable_get('wilke_popup_text', WILKE_POPUP_DEFAULT_TEXT));
+  $html = filter_xss_admin(variable_get('wilke_popup_text', ''));
   $html .= l(t('No thanks'), '<front>', array(
     'attributes' => array(
       'class' => array('action-button', 'bookmark-button'),
@@ -47,6 +47,7 @@ function wilke_popup_callback() {
       'target' => '_blank',
     ),
   ));
+  $html .= '<br>';
 
   $commands[] = ajax_command_ding_popup('ding_bookmark', t('Sorry to interrupt'), $html);
 
