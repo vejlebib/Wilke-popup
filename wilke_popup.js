@@ -10,6 +10,14 @@
             $.cookie('wilke_popup_shown', 1, {"expires": 60});
           }
         }
+
+        // Special handling for accept. We'll close the popup and open the
+        // survey in a new window.
+        $("#wilke-popup-accept").click(function(e) {
+          e.preventDefault();
+          Drupal.ding_popup.close({"name": "wilke-popup"});
+          window.open('http://survey4.wilkeonline.com/entry.aspx?ssid=6371-98751&lan=da', '_tab');
+        })
     }
   };
 

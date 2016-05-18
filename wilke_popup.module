@@ -45,11 +45,12 @@ function wilke_popup_callback() {
     'attributes' => array(
       'class' => array('action-button', 'bookmark-button'),
       'target' => '_blank',
+      'id' => 'wilke-popup-accept',
     ),
   ));
   $html .= '<br>';
 
-  $commands[] = ajax_command_ding_popup('ding_bookmark', t('Sorry to interrupt'), $html);
+  $commands[] = ajax_command_ding_popup('wilke-popup', t('Sorry to interrupt'), $html);
 
   return array('#type' => 'ajax', '#commands' => $commands);
 }
